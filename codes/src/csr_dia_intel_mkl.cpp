@@ -34,7 +34,7 @@ int main (int argc,char **argv){
 	csr. rptr = new int [coo.nr +1 ];
 	csr.nnz = coo.nnz;
 	cerr << "finished reading data to memory:\n\n";
-        cerr << "converting csr to csc\n\n";
+        cerr << "converting csr to dia\n\n";
 	MKL_INT res1;
 	mkl_scsrcoo(coo_csr_job 
 		    /*job instructions check documentation for 
@@ -60,21 +60,26 @@ int main (int argc,char **argv){
 		    &res1);
         assert(res1==0 && "something happened during conversion aborting");
         // CSC data structure
-	csc_d csc;
-	csc.rows = new int[coo.nnz];
+	csr_d rem_csr;
+	rem_csr.cols = new int[coo.nnz];
 
-	csc.vals = new float[coo.nnz];
-	csc.cptr = new int [coo.nr +1 ];
-	csc.nnz = coo.nnz;
-	MKL_INT csr_csc_job [6] = 
-	{0 /*csr->csc*/,
+	rem_csr.vals = new float[coo.nnz];
+	rem_csr.rptr = new int [coo.nr +1 ];
+	rem_csr.nnz = coo.nnz;
+	MKL_INT csr_dia_job [6] = 
+	{0 /*csr->dia*/,
 	       	0 /* zero based indexing CSR*/,
 	       	0/*zero based indexing COO*/,
 		0,
 		0,/*max number of non zero elements allowed*/
-		1, /*fill up acsr, ja and ia when converting to CSR*/
+		11, /*diagonals are selected internally, and csr_rem, ja_rem,
+			 ia_rem are filled in for the output storage.*/
 	};
         
+        dia_d dia;
+        dia.ndiag = coo.nr;
+	dia.idiag = (coo.nr -1) * (coo.nc -2);
+         
 	//timing
 	for (int i = 0; i <count ;i++){
            struct timeval t0;
@@ -83,10 +88,10 @@ int main (int argc,char **argv){
 
            gettimeofday(&t0, 0);  
 	   MKL_INT res;
-	   mkl_scsrcsc(csr_csc_job 
+	   mkl_scsrdia(csr_dia_job 
 	   	       /*job instructions check documentation for 
 	                          specification 
-			   https://software.intel.com/en-us/mkl-developer-reference-c-mkl-csrcsc */
+			   https://software.intel.com/en-us/mkl-developer-reference-c-mkl-csrdia */
 		       ,dimension
 		       /*dimension pointer for the matrix, seems to require
 		        * square matrix. any way i placed both the row and col
@@ -95,9 +100,13 @@ int main (int argc,char **argv){
 		       csr.vals /*input: result of the nnz csr vector*/,
 		       (MKL_INT *) csr.cols, /*input: col component of csr.sorted*/
 		       (MKL_INT *) csr.rptr, /*input: row ptr component of csr*/
-		       csc.vals, /*outupt: non zero csr values of matrix*/
-		       csc.rows, /*output: row indices*/
-		       csc.cptr, /*output: col ptr component of csc*/
+		       dia.vals, /*outupt: diagonals of dia*/
+		       (MKL_INT *) &dia.ndiag, /*specifies the leading dimension of the array adia*/
+		       dia.offsets,
+		       (MKL_INT*)&dia.idiag, /*output: col ptr component of csc*/
+		       rem_csr.vals, /*outupt: non zero csr values of matrix remainder*/
+		       rem_csr.cols, /*output: col indices remainder*/
+		       rem_csr.rptr, /*output: row ptr component of remainder*/
 		       &res);
 
            gettimeofday(&t1, 0);

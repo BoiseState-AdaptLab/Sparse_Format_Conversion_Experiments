@@ -7,14 +7,14 @@
 	INTEL = intel-mkl
 
 #-------Define options passed by make to the compiler
-	CFLAGS = -Wall -std=c++11
+	CFLAGS = -std=c++11 -g
 	
 #-------Setup tags for source instruction for mkl library	
 	MKLSRCTAGS =  /opt/intel/compilers_and_libraries_2018.2.199/linux/mkl/bin/mklvars.sh ia32
 
 #-------Define target "all" for building the executable(s)
 #-------Include the rules for rebuilding each *.o file
-all:    coo_csr_intel_mkl csr_csc_intel_mkl
+all:    coo_csr_intel_mkl csr_csc_intel_mkl  csr_dia_intel_mkl
 
 rules.d: Makefile $(wildcard *.cpp) $(wildcard *.h)
 	g++ -MM $(wildcard *.cpp) >rules.d
@@ -22,13 +22,20 @@ rules.d: Makefile $(wildcard *.cpp) $(wildcard *.h)
 -include rules.d
 
 coo_csr_intel_mkl:
-	g++ $(CFLAGS) $(SRC)/coo_csr_intel_mkl.cpp  -L${MKLROOT}/lib/intel64\
+	g++ $(CFLAGS) $(SRC)/coo_csr_intel_mkl.cpp $(SRC)/sparse_format.cpp \
+		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
-
 csr_csc_intel_mkl:
-	g++ $(CFLAGS) $(SRC)/csr_csc_intel_mkl.cpp -L${MKLROOT}/lib/intel64\
+	g++ $(CFLAGS) $(SRC)/csr_csc_intel_mkl.cpp $(SRC)/sparse_format.cpp \
+		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+	       	-Wl,--no-as-needed\
+	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
+	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
+csr_dia_intel_mkl:
+	g++ $(CFLAGS) $(SRC)/csr_dia_intel_mkl.cpp $(SRC)/sparse_format.cpp \
+		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@

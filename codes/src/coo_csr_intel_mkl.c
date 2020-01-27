@@ -128,6 +128,7 @@ void split(char *s, char* delim, char* result [3]) {
    char * tok = strtok(s,delim);
    int i = 0;
    while (tok!=NULL){
+      printf("%s \n", tok);
       result[i] = tok;
       strtok(NULL,delim);
       i++;
