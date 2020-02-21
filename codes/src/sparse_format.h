@@ -30,7 +30,7 @@ struct dia_d {
    int ndiag;
    int * offsets; /*distance*/
    float * vals;
-   int idiag; /*ndiag * idiag = diag matrix values
+   int * idiag; /*ndiag * idiag = diag matrix values
 	      *this is the dia matrix dimensions */
 };
 void read_sparse_coo (const std::string&, coo_d&);

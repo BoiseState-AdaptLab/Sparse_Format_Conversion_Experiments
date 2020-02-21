@@ -20,7 +20,7 @@
 
 #-------Define target "all" for building the executable(s)
 #-------Include the rules for rebuilding each *.o file
-all:    setup coo_csr_intel_mkl csr_csc_intel_mkl  csr_dia_intel_mkl coo_csr_sparskit
+all:    setup coo_csr_intel_mkl csr_csc_intel_mkl  csr_dia_intel_mkl coo_csr_sparskit csc_dia_intel_mkl
 
 rules.d: Makefile $(wildcard $(SRC)/*.cpp) $(wildcard *.h)
 	g++ -MM $(wildcard $(SRC)/*.cpp) >rules.d
@@ -41,6 +41,12 @@ csr_csc_intel_mkl:
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
 csr_dia_intel_mkl:
 	g++ $(CFLAGS) $(SRC)/csr_dia_intel_mkl.cpp $(SRC)/sparse_format.cpp \
+		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+	       	-Wl,--no-as-needed\
+	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
+	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
+csc_dia_intel_mkl:
+	g++ $(CFLAGS) $(SRC)/csc_dia_intel_mkl.cpp $(SRC)/sparse_format.cpp \
 		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
