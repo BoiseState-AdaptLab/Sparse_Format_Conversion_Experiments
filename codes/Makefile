@@ -29,25 +29,25 @@ rules.d: Makefile $(wildcard $(SRC)/*.cpp) $(wildcard *.h)
 
 coo_csr_intel_mkl:
 	g++ $(CFLAGS) $(SRC)/coo_csr_intel_mkl.cpp $(SRC)/sparse_format.cpp \
-		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+		 -L${MKLROOT}/lib/intel64 -I${MKLROOT}/include $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
 csr_csc_intel_mkl:
-	g++ $(CFLAGS) $(SRC)/csr_csc_intel_mkl.cpp $(SRC)/sparse_format.cpp \
-		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+	g++ $(CFLAGS) $(SRC)/csr_csc_intel_mkl.cpp  $(SRC)/sparse_format.cpp \
+		 -L${MKLROOT}/lib/intel64 -I${MKLROOT}/include $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
 csr_dia_intel_mkl:
 	g++ $(CFLAGS) $(SRC)/csr_dia_intel_mkl.cpp $(SRC)/sparse_format.cpp \
-		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+		 -L${MKLROOT}/lib/intel64 -I${MKLROOT}/include $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
 csc_dia_intel_mkl:
 	g++ $(CFLAGS) $(SRC)/csc_dia_intel_mkl.cpp $(SRC)/sparse_format.cpp \
-		 -L${MKLROOT}/lib/intel64 $(SRC)/sparse_format.h \
+		 -L${MKLROOT}/lib/intel64 -I${MKLROOT}/include $(SRC)/sparse_format.h \
 	       	-Wl,--no-as-needed\
 	       	-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core \
 	       	-liomp5 -lpthread -lm -ldl -o $(BIN)/$@
