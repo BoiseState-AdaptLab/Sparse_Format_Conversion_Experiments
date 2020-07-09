@@ -13,7 +13,7 @@
 	CFLAGS = -std=c++11 -g
 	
 	FFLAGS = -std=f2003  
-#-------Setup tags for source instruction for mkl library	
+#-------Setup tags for source instruction for mkl library mkl must be installed	
 	MKLSRCTAGS =  /opt/intel/compilers_and_libraries_2018.2.199/linux/mkl/bin/mklvars.sh ia32
 	SPARSKIT= $(LIB)/SPARSKIT2
 	LFFLAGS = -L$(SPARSKIT)/ -L$(LIB)/
